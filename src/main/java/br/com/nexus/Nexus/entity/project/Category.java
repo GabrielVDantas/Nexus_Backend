@@ -1,4 +1,4 @@
-package br.com.nexus.Nexus.entity;
+package br.com.nexus.Nexus.entity.project;
 
 public enum Category {
     ACAO("Ação"),

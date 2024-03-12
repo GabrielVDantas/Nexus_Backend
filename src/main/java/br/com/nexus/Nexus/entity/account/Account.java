@@ -1,5 +1,6 @@
-package br.com.nexus.Nexus.entity;
+package br.com.nexus.Nexus.entity.account;
 
+import br.com.nexus.Nexus.entity.project.Project;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,13 +13,12 @@ import java.util.Collection;
 import java.util.List;
 
 @Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@AllArgsConstructor @NoArgsConstructor
 @Entity(name = "accounts")
 @Table(name = "accounts")
 public class Account implements UserDetails {
 
-    @Id
-    @GeneratedValue()
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 100, nullable = false)
@@ -30,17 +30,23 @@ public class Account implements UserDetails {
     @Column(length = 100, nullable = false)
     private String password;
 
+    @Transient
+    private String confirmPassword;
+
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Project> projects;
 
+    @Transient
     private String verificationCode;
 
+    @Transient
     private boolean enabled;
 
-    public Account(String name, String email, String password) {
+    public Account(String name, String email, String password, String confirmPassword) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.confirmPassword = confirmPassword;
     }
 
     @Override

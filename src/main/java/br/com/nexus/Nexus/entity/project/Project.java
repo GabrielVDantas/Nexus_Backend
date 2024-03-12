@@ -1,5 +1,6 @@
-package br.com.nexus.Nexus.entity;
+package br.com.nexus.Nexus.entity.project;
 
+import br.com.nexus.Nexus.entity.account.Account;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.math.BigDecimal;
 public class Project {
 
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 100, nullable = false, unique = true)
