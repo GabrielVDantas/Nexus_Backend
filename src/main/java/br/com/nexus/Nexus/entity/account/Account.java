@@ -36,7 +36,6 @@ public class Account implements UserDetails {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Project> projects;
 
-    @Transient
     private String verificationCode;
 
     @Transient
@@ -47,6 +46,11 @@ public class Account implements UserDetails {
         this.email = email;
         this.password = password;
         this.confirmPassword = confirmPassword;
+    }
+
+    public Account(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     @Override
