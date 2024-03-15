@@ -415,8 +415,8 @@ public class MailService {
                 "\n" +
                 "</html>";
 
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        var mimeMessage = javaMailSender.createMimeMessage();
+        var mimeMessageHelper = new MimeMessageHelper(mimeMessage);
 
         try {
             mimeMessageHelper.setFrom(fromAddress, senderName);

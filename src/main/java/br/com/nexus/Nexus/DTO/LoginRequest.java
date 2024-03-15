@@ -1,5 +1,6 @@
-package br.com.nexus.Nexus.entity.account;
+package br.com.nexus.Nexus.DTO;
 
+import br.com.nexus.Nexus.entity.account.Account;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,8 +1,9 @@
 package br.com.nexus.Nexus.controller;
 
-import br.com.nexus.Nexus.entity.account.LoginRequest;
-import br.com.nexus.Nexus.entity.account.RegisterRequest;
-import br.com.nexus.Nexus.entity.account.AccountResponse;
+import br.com.nexus.Nexus.DTO.LoginRequest;
+import br.com.nexus.Nexus.DTO.LoginResponse;
+import br.com.nexus.Nexus.DTO.RegisterRequest;
+import br.com.nexus.Nexus.DTO.RegisterResponse;
 import br.com.nexus.Nexus.service.AccountService.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,12 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping("/register")
-    public ResponseEntity<AccountResponse> RegistAccount(@RequestBody @Valid RegisterRequest registerRequest) {
+    public ResponseEntity<RegisterResponse> registAccount(@RequestBody @Valid RegisterRequest registerRequest) {
 
         var account = registerRequest.convertUserInfoIntoToRegister();
-        AccountResponse accountResponse = accountService.signUp(account);
+        var registerResponse = accountService.signUp(account);
 
-        return ResponseEntity.ok().body(accountResponse);
+        return ResponseEntity.ok().body(registerResponse);
     }
 
     @GetMapping("/verify")
@@ -36,12 +37,12 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AccountResponse> LoginAccount(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> LoginAccount(@RequestBody @Valid LoginRequest loginRequest) {
 
         var account = loginRequest.convertUserInfoIntoToLogin();
-        AccountResponse accountResponse = accountService.signIn(account);
+        var loginResponse = accountService.signIn(account);
 
-        return ResponseEntity.ok().body(accountResponse);
+        return ResponseEntity.ok().body(loginResponse);
     }
 
 
