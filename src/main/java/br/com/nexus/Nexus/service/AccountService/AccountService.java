@@ -6,7 +6,6 @@ import br.com.nexus.Nexus.DTO.RegisterResponse;
 import br.com.nexus.Nexus.repository.AccountRepository;
 import br.com.nexus.Nexus.util.RandomCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,19 +15,14 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private MailService mailService;
 
     @Autowired
     private AccountValidation accountValidation;
 
-    public RegisterResponse signUp(Account account) {
+    public RegisterResponse registerAccount(Account account) {
 
-        accountValidation.validateInfoToSignUp(account);
-
-        account.setPassword(accountValidation.encodePassword(account.getPassword()));
+        accountValidation.validateRegister(account);
 
         var randomCode = RandomCodeGenerator.generateRandomCode(64);
         account.setVerificationCode(randomCode);
@@ -41,13 +35,21 @@ public class AccountService {
         return accountResponse;
     }
 
-    public LoginResponse signIn(Account account) {
+    public LoginResponse authenticateAccount(Account account) {
 
-        accountValidation.validateInfoToSignIn(account);
+        accountValidation.validateEmailAndPassword(account);
 
-        return new LoginResponse(
+        var loginResponse = new LoginResponse(
                 account.getEmail(), account.getPassword()
         );
+        return loginResponse;
+    }
+
+    public String deleteAccount(Account account) {
+
+        accountValidation.validateDelete(account);
+
+        return "Conta deletada";
     }
 
     public boolean verifyCode(String verificationCode) {

@@ -1,9 +1,6 @@
 package br.com.nexus.Nexus.controller;
 
-import br.com.nexus.Nexus.DTO.LoginRequest;
-import br.com.nexus.Nexus.DTO.LoginResponse;
-import br.com.nexus.Nexus.DTO.RegisterRequest;
-import br.com.nexus.Nexus.DTO.RegisterResponse;
+import br.com.nexus.Nexus.DTO.*;
 import br.com.nexus.Nexus.service.AccountService.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +18,8 @@ public class AccountController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> registAccount(@RequestBody @Valid RegisterRequest registerRequest) {
 
-        var account = registerRequest.convertUserInfoIntoToRegister();
-        var registerResponse = accountService.signUp(account);
+        var account = registerRequest.convertInfoToRegister();
+        var registerResponse = accountService.registerAccount(account);
 
         return ResponseEntity.ok().body(registerResponse);
     }
@@ -37,14 +34,20 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> LoginAccount(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> loginAccount(@RequestBody @Valid LoginRequest loginRequest) {
 
         var account = loginRequest.convertUserInfoIntoToLogin();
-        var loginResponse = accountService.signIn(account);
+        var loginResponse = accountService.authenticateAccount(account);
 
         return ResponseEntity.ok().body(loginResponse);
     }
 
+    @PostMapping("/delete")
+    public ResponseEntity deleteAccount(@RequestBody @Valid DeleteRequest deleteRequest) {
 
+        var account = deleteRequest.convertToDelete();
+        var deleteResponse = accountService.deleteAccount(account);
 
+        return ResponseEntity.ok(deleteResponse);
+    }
 }

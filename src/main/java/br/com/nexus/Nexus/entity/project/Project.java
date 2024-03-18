@@ -19,7 +19,7 @@ public class Project {
     private Long id;
 
     @Column(length = 100, nullable = false, unique = true)
-    private String name;
+    private String title;
 
     @Column(length = 100, nullable = false)
     private String description;

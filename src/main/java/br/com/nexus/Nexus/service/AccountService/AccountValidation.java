@@ -1,12 +1,13 @@
 package br.com.nexus.Nexus.service.AccountService;
 
 import br.com.nexus.Nexus.entity.account.Account;
-import br.com.nexus.Nexus.exception.EmailException;
-import br.com.nexus.Nexus.exception.PasswordConfirmationException;
 import br.com.nexus.Nexus.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AccountValidation {
@@ -17,41 +18,59 @@ public class AccountValidation {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private Boolean confirmation;
+    public void validateRegister(Account account) {
 
-    public void validateInfoToSignUp(Account account) {
-        if (accountExist(account)) {
-            throw new EmailException("Já existe uma conta com esse e-mail");
+        if (searchAccountByEmail(account).isPresent()) {
+            throw new RuntimeException("Já existe uma conta com esses dados");
         }
-        confirmation = account.getPassword().equals(account.getConfirmPassword());
-        validatePassword(confirmation);
-    }
-
-    public void validateInfoToSignIn(Account account) {
-        var existingAccount = searchAccount(account);
-        if (!accountExist(account)) {
-            throw new EmailException("Não existe uma conta com esse e-mail");
+        if (!comparePassword(account)) {
+            throw new RuntimeException("As senhas não batem");
         }
-        confirmation = passwordEncoder.matches(account.getPassword(), existingAccount.getPassword());
-        validatePassword(confirmation);
+        setEncodePassword(account);
     }
 
-    private void validatePassword(boolean confirmation) {
-        if (!confirmation) {
-            throw new PasswordConfirmationException("Senha inválida," +
-                    " verifique se a senha foi digitada corretamente");
+    public Account validateEmailAndPassword(Account account) {
+
+        var existingAccount = searchAccountByEmail(account);
+
+        if (existingAccount.isEmpty()) {
+            throw new RuntimeException("Não existe uma conta com esses dados");
         }
+
+        var getExistingAccount = existingAccount.get();
+        var comparingPassword = compareCodedPassword(account, getExistingAccount);
+
+        if (!comparingPassword) {
+            throw new RuntimeException("Senha incorreta");
+        }
+
+        return getExistingAccount;
     }
 
-    private Account searchAccount(Account account) {
-        return (Account) accountRepository.findByEmail(account.getEmail());
+    public void validateDelete(Account account) {
+
+        var getExistingAccount = validateEmailAndPassword(account);
+
+        accountRepository.deleteById((getExistingAccount).getId());
     }
 
-    private boolean accountExist(Account account) {
-        return searchAccount(account) != null;
+    private Optional<Account> searchAccountByEmail(Account account) {
+        return accountRepository.findByEmail(account.getEmail());
     }
 
-    public String encodePassword(String password) {
-        return passwordEncoder.encode(password);
+    private boolean compareCodedPassword(Account account, Account getExistingAccount) {
+        return passwordEncoder.matches(account.getPassword(), getExistingAccount.getPassword());
+    }
+
+    private boolean comparePassword(Account account) {
+        return account.getPassword().equals(account.getConfirmPassword());
+    }
+
+    public void setEncodePassword(Account account) {
+        account.setPassword(passwordEncoder(account));
+    }
+
+    public String passwordEncoder(Account account) {
+        return passwordEncoder.encode(account.getPassword());
     }
 }

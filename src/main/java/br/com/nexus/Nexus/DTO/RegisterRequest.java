@@ -25,7 +25,7 @@ public record RegisterRequest(
          @NotNull(message = "Todos os campos devem ser preenchidos")
          @NotBlank(message = "Todos os campos devem ser preenchidos") String confirmPassword) {
 
-    public Account convertUserInfoIntoToRegister() {
+    public Account convertInfoToRegister() {
         return new Account(name, email, password, confirmPassword);
     }
 
