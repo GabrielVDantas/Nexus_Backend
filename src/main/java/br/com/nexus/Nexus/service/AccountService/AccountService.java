@@ -20,9 +20,9 @@ public class AccountService {
     @Autowired
     private AccountValidation accountValidation;
 
-    public RegisterResponse registerAccount(Account account) {
-
-        accountValidation.validateRegister(account);
+    public Object registerAccount(Account account) {
+        
+        accountValidation.validateInformationToRegister(account);
 
         var randomCode = RandomCodeGenerator.generateRandomCode(64);
         account.setVerificationCode(randomCode);

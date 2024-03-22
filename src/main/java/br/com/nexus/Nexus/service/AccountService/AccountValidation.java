@@ -3,11 +3,11 @@ package br.com.nexus.Nexus.service.AccountService;
 import br.com.nexus.Nexus.entity.account.Account;
 import br.com.nexus.Nexus.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 
 @Service
 public class AccountValidation {
@@ -18,33 +18,30 @@ public class AccountValidation {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public void validateRegister(Account account) {
+    public void validateInformationToRegister(Account account) {
 
         if (searchAccountByEmail(account).isPresent()) {
             throw new RuntimeException("Já existe uma conta com esses dados");
         }
-        if (!comparePassword(account)) {
-            throw new RuntimeException("As senhas não batem");
-        }
-        setEncodePassword(account);
+
+        account.setPassword(encodeAccountPassword(account));
     }
 
     public Account validateEmailAndPassword(Account account) {
+        var existingAccount = getExistingAccount(account);
+        validatePassword(account, existingAccount);
+        return existingAccount;
+    }
 
-        var existingAccount = searchAccountByEmail(account);
+    private Account getExistingAccount(Account account) {
+        Optional<Account> existingAccount = searchAccountByEmail(account);
+        return existingAccount.orElseThrow(() -> new RuntimeException("Não existe uma conta com esses dados"));
+    }
 
-        if (existingAccount.isEmpty()) {
-            throw new RuntimeException("Não existe uma conta com esses dados");
-        }
-
-        var getExistingAccount = existingAccount.get();
-        var comparingPassword = compareCodedPassword(account, getExistingAccount);
-
-        if (!comparingPassword) {
+    private void validatePassword(Account account, Account existingAccount) {
+        if (!compareTwoCodedPasswords(account, existingAccount)) {
             throw new RuntimeException("Senha incorreta");
         }
-
-        return getExistingAccount;
     }
 
     public void validateDelete(Account account) {
@@ -58,19 +55,11 @@ public class AccountValidation {
         return accountRepository.findByEmail(account.getEmail());
     }
 
-    private boolean compareCodedPassword(Account account, Account getExistingAccount) {
+    private boolean compareTwoCodedPasswords(Account account, Account getExistingAccount) {
         return passwordEncoder.matches(account.getPassword(), getExistingAccount.getPassword());
     }
 
-    private boolean comparePassword(Account account) {
-        return account.getPassword().equals(account.getConfirmPassword());
-    }
-
-    public void setEncodePassword(Account account) {
-        account.setPassword(passwordEncoder(account));
-    }
-
-    public String passwordEncoder(Account account) {
+    private String encodeAccountPassword(Account account) {
         return passwordEncoder.encode(account.getPassword());
     }
 }

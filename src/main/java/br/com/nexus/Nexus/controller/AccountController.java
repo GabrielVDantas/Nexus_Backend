@@ -16,9 +16,9 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> registAccount(@RequestBody @Valid RegisterRequest registerRequest) {
+    public ResponseEntity<Object> registAccount(@RequestBody RegisterRequest registerRequest) {
 
-        var account = registerRequest.convertInfoToRegister();
+        var account = registerRequest.convertInformationToRegister();
         var registerResponse = accountService.registerAccount(account);
 
         return ResponseEntity.ok().body(registerResponse);
@@ -34,7 +34,7 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginAccount(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> loginAccount(@RequestBody LoginRequest loginRequest) {
 
         var account = loginRequest.convertUserInfoIntoToLogin();
         var loginResponse = accountService.authenticateAccount(account);
@@ -43,7 +43,7 @@ public class AccountController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity deleteAccount(@RequestBody @Valid DeleteRequest deleteRequest) {
+    public ResponseEntity deleteAccount(@RequestBody DeleteRequest deleteRequest) {
 
         var account = deleteRequest.convertToDelete();
         var deleteResponse = accountService.deleteAccount(account);

@@ -2,6 +2,7 @@ package br.com.nexus.Nexus.entity.account;
 
 import br.com.nexus.Nexus.entity.project.Project;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,28 +26,25 @@ public class Account implements UserDetails {
     @Column(length = 100, nullable = false)
     private String name;
 
+    @Email
     @Column(length = 100, nullable = false, unique = true)
     private String email;
 
     @Column(length = 100, nullable = false)
     private String password;
 
-    @Transient
-    private String confirmPassword;
-
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Project> projects;
+    private List<Project> projects = new ArrayList<>();
 
     private String verificationCode;
 
     @Transient
     private boolean enabled;
 
-    public Account(String name, String email, String password, String confirmPassword) {
+    public Account(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.confirmPassword = confirmPassword;
     }
 
     public Account(String email, String password) {
