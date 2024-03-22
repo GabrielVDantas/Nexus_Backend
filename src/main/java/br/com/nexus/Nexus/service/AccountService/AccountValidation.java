@@ -30,11 +30,13 @@ public class AccountValidation {
     public Account validateEmailAndPassword(Account account) {
         var existingAccount = getExistingAccount(account);
         validatePassword(account, existingAccount);
+
         return existingAccount;
     }
 
     private Account getExistingAccount(Account account) {
         Optional<Account> existingAccount = searchAccountByEmail(account);
+
         return existingAccount.orElseThrow(() -> new RuntimeException("Não existe uma conta com esses dados"));
     }
 

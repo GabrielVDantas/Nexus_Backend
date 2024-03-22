@@ -2,9 +2,9 @@ package br.com.nexus.Nexus.controller;
 
 import br.com.nexus.Nexus.DTO.*;
 import br.com.nexus.Nexus.service.AccountService.AccountService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +16,12 @@ public class AccountController {
     private AccountService accountService;
 
     @PostMapping("/register")
-    public ResponseEntity<Object> registAccount(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<Void> registAccount(@RequestBody RegisterRequest registerRequest) {
 
         var account = registerRequest.convertInformationToRegister();
-        var registerResponse = accountService.registerAccount(account);
+        accountService.registerAccount(account);
 
-        return ResponseEntity.ok().body(registerResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/verify")
@@ -34,20 +34,20 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginAccount(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Void> loginAccount(@RequestBody LoginRequest loginRequest) {
 
-        var account = loginRequest.convertUserInfoIntoToLogin();
-        var loginResponse = accountService.authenticateAccount(account);
+        var account = loginRequest.convertUserInformationToLogin();
+        accountService.authenticateAccount(account);
 
-        return ResponseEntity.ok().body(loginResponse);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/delete")
-    public ResponseEntity deleteAccount(@RequestBody DeleteRequest deleteRequest) {
+    public ResponseEntity<Void> deleteAccount(@RequestBody DeleteRequest deleteRequest) {
 
         var account = deleteRequest.convertToDelete();
-        var deleteResponse = accountService.deleteAccount(account);
+        accountService.deleteAccount(account);
 
-        return ResponseEntity.ok(deleteResponse);
+        return ResponseEntity.ok().build();
     }
 }
