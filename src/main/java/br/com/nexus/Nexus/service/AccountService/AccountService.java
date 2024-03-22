@@ -43,14 +43,18 @@ public class AccountService {
     public boolean verifyCode(String verificationCode) {
 
         var account = accountRepository.findByVerificationCode(verificationCode);
+        if (account.isEmpty()) {
+            throw new RuntimeException("Erro ao achar a conta");
+        }
 
-        if (account == null || account.isEnabled()) {
+        var getAccount = account.get();
+        if (getAccount.isEnabled()) {
             return false;
         } else {
 
-            account.setVerificationCode(null);
-            account.setEnabled(true);
-            accountRepository.save(account);
+            getAccount.setVerificationCode(null);
+            getAccount.setEnabled(true);
+            accountRepository.save(getAccount);
 
             return true;
         }

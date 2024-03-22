@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 
+@SuppressWarnings("unused")
 @Service
 public class AccountValidation {
 
@@ -23,7 +24,6 @@ public class AccountValidation {
         if (searchAccountByEmail(account).isPresent()) {
             throw new RuntimeException("Já existe uma conta com esses dados");
         }
-
         account.setPassword(encodeAccountPassword(account));
     }
 
@@ -34,23 +34,24 @@ public class AccountValidation {
         return existingAccount;
     }
 
-    private Account getExistingAccount(Account account) {
-        Optional<Account> existingAccount = searchAccountByEmail(account);
-
-        return existingAccount.orElseThrow(() -> new RuntimeException("Não existe uma conta com esses dados"));
-    }
-
-    private void validatePassword(Account account, Account existingAccount) {
-        if (!compareTwoCodedPasswords(account, existingAccount)) {
-            throw new RuntimeException("Senha incorreta");
-        }
-    }
-
     public void validateDelete(Account account) {
 
         var getExistingAccount = validateEmailAndPassword(account);
 
         accountRepository.deleteById((getExistingAccount).getId());
+    }
+
+    private Account getExistingAccount(Account account) {
+        Optional<Account> existingAccount = searchAccountByEmail(account);
+
+        return existingAccount.orElseThrow(() ->
+                new RuntimeException("Erro, verifique se o e-mail e senha foram digitados corretamente"));
+    }
+
+    private void validatePassword(Account account, Account existingAccount) {
+        if (!compareTwoCodedPasswords(account, existingAccount)) {
+            throw new RuntimeException("Erro, verifique se o e-mail e senha foram digitados corretamente");
+        }
     }
 
     private Optional<Account> searchAccountByEmail(Account account) {
