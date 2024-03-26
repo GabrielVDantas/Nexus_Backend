@@ -42,7 +42,7 @@ public class AccountValidation {
     }
 
     private Account getExistingAccount(Account account) {
-        Optional<Account> existingAccount = searchAccountByEmail(account);
+        var existingAccount = searchAccountByEmail(account);
 
         return existingAccount.orElseThrow(() ->
                 new RuntimeException("Erro, verifique se o e-mail e senha foram digitados corretamente"));
@@ -50,7 +50,7 @@ public class AccountValidation {
 
     private void validatePassword(Account account, Account existingAccount) {
         if (!compareTwoCodedPasswords(account, existingAccount)) {
-            throw new RuntimeException("Erro, verifique se o e-mail e senha foram digitados corretamente");
+            throw new RuntimeException("Erro, verifique se sua senha foi digitada corretamente");
         }
     }
 
